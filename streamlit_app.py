@@ -62,10 +62,7 @@ try:
     # openai_api_key = ""
     # index_name = ""
 
-    OPENAI_API_KEY = "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"
-    pinecone_api_key = "575b9845-9b40-4de3-bba9-a9b1c38d3a17"
-    pinecone_environment = "gcp-starter"
-    index_name = "trend-logic"
+
 
     openai.api_key = OPENAI_API_KEY
     embed_model = "text-embedding-ada-002"
