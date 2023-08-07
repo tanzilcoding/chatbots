@@ -1,5 +1,5 @@
-langchain==0.0.254
+langchain==0.0.237
 openai==0.27.8
-pinecone==0.1.0
+pinecone-client==2.2.2
 streamlit==1.25.0
 streamlit_chat==0.1.1
