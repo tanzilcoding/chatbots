@@ -51,20 +51,14 @@ try:
     # openai.organization = "<YOUR_OPENAI_ORG_ID>"
     # openai.organization = os.environ['openai_organization']
     # =======================================================
-    # pinecone_api_key = os.environ['pinecone_api_key']
-    # pinecone_environment = os.environ['pinecone_environment']
-    # OPENAI_API_KEY = os.environ['openai_api_key']
-    # openai.api_key = OPENAI_API_KEY
-    # index_name = os.environ['index_name']
-    # ==================================================== #
-    # pinecone_api_key = ""
-    # pinecone_environment = ""
-    # openai_api_key = ""
-    # index_name = ""
-
-
-
+    pinecone_api_key = os.environ['pinecone_api_key']
+    pinecone_environment = os.environ['pinecone_environment']
+    OPENAI_API_KEY = os.environ['openai_api_key']
     openai.api_key = OPENAI_API_KEY
+    index_name = os.environ['index_name']
+    # ==================================================== #
+
+
     embed_model = "text-embedding-ada-002"
 
     # initialize connection to pinecone (get API key at app.pinecone.io)
