@@ -1,0 +1,5 @@
+langchain==0.0.254
+openai==0.27.8
+pinecone==0.1.0
+streamlit==1.25.0
+streamlit_chat==0.1.1
