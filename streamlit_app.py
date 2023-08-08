@@ -130,7 +130,7 @@ try:
             k=5  # return 5 most relevant docs
         )
 
-        st.markdown(f"""<span style="word-wrap:break-word;">RELEVANT DOCUMENTS TO THE QUERY FROM PINECONE.IO</span>""", unsafe_allow_html=True)
+        st.markdown(f"""<span style="word-wrap:break-word;">DOCUMENTS RELEVANT TO THE QUERY FROM PINECONE.IO</span>""", unsafe_allow_html=True)
         st.markdown(f"""<span style="word-wrap:break-word;">=====================================================</span>""", unsafe_allow_html=True)
         custom_context = ""
         counter = 0
