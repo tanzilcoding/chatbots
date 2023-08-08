@@ -6,6 +6,8 @@ import streamlit as st
 from streamlit_chat import message
 import streamlit.components.v1 as components
 from streamlit.components.v1 import html
+# from langchain import PromptTemplate
+from langchain.prompts import ChatPromptTemplate
 from langchain.vectorstores import Pinecone
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
@@ -13,27 +15,11 @@ from langchain.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from langchain.chains.question_answering import load_qa_chain
 
-# cd /Users/macmini/Documents/Python/Streamlit/app_folder
-# python3.11 -m venv venv
-# source venv/bin/activate
-# pip3.11 install --upgrade pip
-# pip3.11 install openai
-# pip3.11 install "pinecone-client"
-# pip3.11 install langchain
-# pip3.11 install streamlit
-# pip3.11 install streamlit_chat
-# pip3.11 install tiktoken
-# pip3.10 install pipreqs
-# pipreqs /Users/macmini/Documents/Python/Streamlit/app_folder
-# deactivate
-# =======================================================
-# cd /Users/macmini/Documents/Python/Streamlit/app_folder
-# source venv/bin/activate
-# pip3.11 install --upgrade pip
-# streamlit run streamlit_app.py
-# =======================================================
-# deactivate
-# =======================================================
+
+try:
+    import environment_variables
+except ImportError:
+    pass
 
 try:
     # Setting page title and header
@@ -51,9 +37,9 @@ try:
     # openai.organization = "<YOUR_OPENAI_ORG_ID>"
     # openai.organization = os.environ['openai_organization']
     # =======================================================
+    OPENAI_API_KEY = os.environ['openai_api_key']
     pinecone_api_key = os.environ['pinecone_api_key']
     pinecone_environment = os.environ['pinecone_environment']
-    OPENAI_API_KEY = os.environ['openai_api_key']
     openai.api_key = OPENAI_API_KEY
     index_name = os.environ['index_name']
     # ==================================================== #
@@ -139,32 +125,57 @@ try:
             # verbose=True
         )
 
-        messages = [
-            SystemMessage(
-                content=primer
-            ),
-            HumanMessage(
-                content=query
-                # content="Please give me a detailed answer to my question."
-            ),
-        ]
-
-        llm(messages)
-
         docs = vectorstore.similarity_search(
             query,  # our search query
             k=5  # return 5 most relevant docs
         )
 
+        st.markdown(f"""<span style="word-wrap:break-word;">RELEVANT DOCUMENTS TO THE QUERY FROM PINECONE.IO</span>""", unsafe_allow_html=True)
+        st.markdown(f"""<span style="word-wrap:break-word;">=====================================================</span>""", unsafe_allow_html=True)
+        custom_context = ""
+        counter = 0
+        for doc in docs:
+            counter = counter + 1
+            # st.sidebar.text(doc.page_content)
+            # st.write(doc.page_content)
+            custom_context = custom_context + doc.page_content + "\n\n"
+            st.markdown(f"""<span style="word-wrap:break-word;"><span style="font-weight: bold; color: red;">Document {counter}</span> --- {doc.page_content}</span>""", unsafe_allow_html=True)
+
+        st.markdown(f"""<span style="word-wrap:break-word;">=====================================================</span>""", unsafe_allow_html=True)
+
+        # custom_context = custom_context.strip()
+
         # st.sidebar.text(docs)
+        ####################################################
+        template = """You are Q&A bot. Answer the question based on the context below. If the question cannot be answered using the information provided, answer with "I don't know".
 
-        chain = load_qa_chain(llm, chain_type="stuff",
-                                # verbose=True
-                                )
+        #####Start of context#####
+        {custom_context}
+        #####End of context#####
 
-        question = query
-        raw_answer = chain.run(input_documents=docs, question=question)
+        Question: {query}
+        Helpful Answer:"""
+        prompt_template = ChatPromptTemplate.from_template(template)
+        # messages = prompt_template.format_messages(rcustom_context=custom_context, query=query)
+        messages = prompt_template.format_messages(custom_context=custom_context, query=query)
 
+
+        temp_template = f"""You are Q&A bot. Answer the question based on the context below. If the question cannot be answered using the information provided, answer with "I don't know".
+
+        #####Start of context#####
+        {custom_context}
+        #####End of context#####
+
+        Question: {query}
+        Helpful Answer:"""
+        st.markdown(f"""<span style="word-wrap:break-word;"><span style="font-weight: bold; color: red;">INPUT SENT TO OPENAI / CHATGPT:</span> {temp_template}""", unsafe_allow_html=True)
+        ####################################################
+        # chat is the model and messages is the prompt
+        response = llm(messages)
+        # print(response.content)
+        raw_answer = response.content
+
+        # raw_answer = llm(template_data)
         # st.sidebar.text(raw_answer)
 
         response = raw_answer.strip()
